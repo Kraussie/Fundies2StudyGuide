@@ -1,3 +1,136 @@
+# EXAM 2 REFERENCE SHEET
+```java
+/* DEQUE Methods:
+ * 
+ * this.size()
+ * this.addToHead(T)
+ * this.addToTail(T)
+ * this.removeFromHead()
+ * this.removeFromTail()
+ * 
+ */
+
+class Deque<T> {
+  Sentinel<T> header;
+  
+  // Returns the number of items in this Deque (excluding the sentinel)
+  int size() {
+    return this.header.next.countNodes(0);
+  }
+  
+  // EFFECT: inserts the given value at the front of the Deque
+  void addToHead(T value) {
+    this.header.insert(value, this.header.next, this.header);
+  }
+  
+  // EFFET: inserts the given value at the back of the Deque
+  void addToTail(T value) {
+    this.header.insert(value, this.header, this.header.prev);
+  }
+  
+  // Returns the current first item of the Deque
+  // EFFECT: removes the current first item of the Deque
+  T removeFromHead() {
+    return this.header.next.remove();
+  }
+  
+  // Returns the current last item of the Deque
+  // EFFET: removes the current last item of the Deque
+  T removeFromTail() {
+    return this.header.prev.remove();
+  }
+}
+
+abstract class ANode<T> {
+  ANode<T> next;
+  ANode<T> prev;  
+
+  // accumulates the number of nodes in the list
+  abstract int countNodes(int soFar);
+  
+  // removes this ANode from the list, if possible
+  abstract T remove();
+}
+
+class Sentinel<T> extends ANode<T> {
+  // main constructor
+  Sentinel() {
+    // refer links of sentinel to itself
+    this.next = this;
+    this.prev = this;
+  }
+
+  @Override
+  // returns the number of nodes counted by the accumulator
+  int countNodes(int soFar) {
+    return soFar;
+  }
+  
+  // creates a new node and updates the respective links
+  void insert(T data, ANode<T> next, ANode<T> prev) {
+    new Node<T>(data, next, prev);
+  }
+
+  @Override
+  // attempted to remove node from empty list, throw error
+  T remove() {
+    throw new RuntimeException("Tried to remove a Sentinel");
+  }
+}
+
+class Node<T> extends ANode<T> {
+  T data;
+
+  // main constructor
+  Node(T data) {
+    this.data = data;
+    this.next = null;
+    this.prev = null;
+  }
+
+  // convenience constructor
+  Node(T data, ANode<T> next, ANode<T> prev) {
+    // validate parameters
+    if (next == null || prev == null) {
+      throw new IllegalArgumentException("Given a null link");
+    }
+    else {
+      this.data = data;
+      this.next = next;
+      this.prev = prev;
+    }
+
+    // update given nodes' links
+    this.next.prev = this;
+    this.prev.next = this;
+  }
+
+  @Override
+  // found a node, keep counting
+  int countNodes(int soFar) {
+    return this.next.countNodes(soFar + 1);
+  }
+
+  @Override
+  // removes this node from the list, returns its data
+  T remove() {
+    // update links of neighboring ANodes
+    this.prev.next = this.next;
+    this.next.prev = this.prev;
+
+    return this.data;
+  }
+}
+
+/* ARRAY LIST METHODS
+ * this.size()
+ * this.add(T)
+ * this.get(int)
+ * this.set(int, T)
+ * this.remove(T)
+ */
+```
+
 # Sameness (Lecture 11 & 12)
 Sameness is defined as:
 - **Reflexivity**: every object should be the same as itself.
